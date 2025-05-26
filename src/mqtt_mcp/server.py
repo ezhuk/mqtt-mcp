@@ -1,19 +1,23 @@
 """A lightweigth MCP server for the MQTT protocol."""
 
-from dataclasses import dataclass
-
 from fastmcp import FastMCP
 from fastmcp.prompts.prompt import Message
 from paho.mqtt import publish
+from pydantic import BaseModel
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-@dataclass(frozen=True)
-class MQTT:
-    """Default MQTT connection settings."""
+class MQTT(BaseModel):
+    host: str = "127.0.0.1"
+    port: int = 1883
 
-    HOST = "127.0.0.1"
-    PORT = 1883
 
+class Settings(BaseSettings):
+    mqtt: MQTT = MQTT()
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+
+
+settings = Settings()
 
 mcp = FastMCP(name="MQTT MCP Server")
 
@@ -22,8 +26,8 @@ mcp = FastMCP(name="MQTT MCP Server")
 async def publish_topic(
     data: str,
     topic: str,
-    host: str = MQTT.HOST,
-    port: int = MQTT.PORT,
+    host: str = settings.mqtt.host,
+    port: int = settings.mqtt.port,
 ) -> str:
     """Publishes data to the specified topic."""
     try:
@@ -36,7 +40,7 @@ async def publish_topic(
 @mcp.prompt(name="mqtt_help", tags={"mqtt", "help"})
 def mqtt_help() -> list[Message]:
     """Provides examples of how to use the MQTT MCP server."""
-    return []
+    return [Message("Here are examples of how to publish and subscribe to topics:")]
 
 
 @mcp.prompt(name="mqtt_error", tags={"mqtt", "error"})
