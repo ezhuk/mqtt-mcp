@@ -32,6 +32,9 @@ To confirm the server is up and running and explore available resources and tool
 npx @modelcontextprotocol/inspector
 ```
 
+![s01](https://github.com/user-attachments/assets/6ee711b2-994d-4a89-a088-13ad77b09b0e)
+
+
 ## Core Concepts
 
 The MQTT MCP server leverages FastMCP 2.0's core building blocks - resource templates, tools, and prompts - to streamline MQTT receive and publish operations with minimal boilerplate and a clean, Pythonic interface.
