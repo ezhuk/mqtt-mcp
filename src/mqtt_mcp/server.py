@@ -2,9 +2,10 @@
 
 from fastmcp import FastMCP
 from fastmcp.prompts.prompt import Message
-from paho.mqtt import publish
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from mqtt_mcp.mqtt_client import AsyncMQTTClient
 
 
 class MQTT(BaseModel):
@@ -22,16 +23,45 @@ settings = Settings()
 mcp = FastMCP(name="MQTT MCP Server")
 
 
-@mcp.tool()
-async def publish_topic(
-    data: str,
+@mcp.resource("mqtt://{host}:{port}/{topic*}")
+@mcp.tool(
+    annotations={
+        "title": "Receive Message",
+        "readOnlyHint": True,
+        "openWorldHint": True,
+    }
+)
+async def receive_message(
     topic: str,
     host: str = settings.mqtt.host,
     port: int = settings.mqtt.port,
+    timeout: int = 60,
 ) -> str:
-    """Publishes data to the specified topic."""
+    """Receives a message published to the specified topic, if any."""
     try:
-        publish.single(topic, data, hostname=f"{host}:{port}")
+        async with AsyncMQTTClient(host, port) as client:
+            return await client.receive(topic, timeout)
+    except Exception as e:
+        raise RuntimeError(f"{e}") from e
+
+
+@mcp.tool(
+    annotations={
+        "title": "Publish Message",
+        "readOnlyHint": False,
+        "openWorldHint": True,
+    }
+)
+async def publish_message(
+    topic: str,
+    message: str,
+    host: str = settings.mqtt.host,
+    port: int = settings.mqtt.port,
+) -> str:
+    """Publishes payload to the specified topic."""
+    try:
+        async with AsyncMQTTClient(host, port) as client:
+            await client.publish(topic, message)
         return f"Publish to {topic} on {host}:{port} has succedeed"
     except Exception as e:
         raise RuntimeError(f"{e}") from e
@@ -40,7 +70,13 @@ async def publish_topic(
 @mcp.prompt(name="mqtt_help", tags={"mqtt", "help"})
 def mqtt_help() -> list[Message]:
     """Provides examples of how to use the MQTT MCP server."""
-    return [Message("Here are examples of how to publish and subscribe to topics:")]
+    return [
+        Message("Here are examples of how to publish and receives messages:"),
+        Message('Publish {"foo":"bar"} to topic "devices/foo" on 127.0.0.1:1883.'),
+        Message(
+            'Receive a message from topic "devices/bar", waiting up to 30 seconds.'
+        ),
+    ]
 
 
 @mcp.prompt(name="mqtt_error", tags={"mqtt", "error"})
