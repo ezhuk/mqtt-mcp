@@ -12,7 +12,7 @@ async def test_help_prompt():
     """Test help prompt."""
     async with Client(mcp) as client:
         result = await client.get_prompt("mqtt_help", {})
-        assert len(result.messages) == 1
+        assert len(result.messages) == 3
 
 
 @pytest.mark.asyncio
