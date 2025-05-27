@@ -1,4 +1,4 @@
-"""A lightweight Modbus MCP server."""
+"""A lightweight MQTT MCP server."""
 
 import asyncio
 

@@ -58,7 +58,7 @@ async def publish_message(
     host: str = settings.mqtt.host,
     port: int = settings.mqtt.port,
 ) -> str:
-    """Publishes payload to the specified topic."""
+    """Publishes a message to the specified topic."""
     try:
         async with AsyncMQTTClient(host, port) as client:
             await client.publish(topic, message)
