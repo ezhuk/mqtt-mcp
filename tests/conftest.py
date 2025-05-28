@@ -13,7 +13,7 @@ class Config(BaseModel):
 
 
 async def _server_main(config: Config) -> None:
-    # TODO: add test MQTT broker
+    # NOTE: nothing to do here but this may change in the future.
     await asyncio.Future()
 
 
