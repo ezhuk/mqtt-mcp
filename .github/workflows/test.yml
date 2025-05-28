@@ -32,4 +32,4 @@ jobs:
           uv run pytest
       - run: |
           docker stop mosquitto
-          docker rm mosq-broker
+          docker rm mosquitto
