@@ -17,4 +17,4 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 ENV PATH="/app/.venv/bin:$PATH"
 
-ENTRYPOINT ["modbus-mcp"]
+ENTRYPOINT ["mqtt-mcp"]

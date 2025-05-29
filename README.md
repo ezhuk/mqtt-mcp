@@ -104,7 +104,7 @@ Receive a message from topic "devices/bar", waiting up to 30 seconds.
 
 ## Docker
 
-The MQTT MCP server can be deployed as a Docker container. Build the image using the following command:
+The MQTT MCP server can be deployed as a Docker container. Build the image using the `docker build` command:
 
 ```bash
 docker build -t mqtt-mcp .
