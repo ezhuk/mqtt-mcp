@@ -102,6 +102,27 @@ Publish {"foo":"bar"} to topic "devices/foo" on 127.0.0.1:1883.
 Receive a message from topic "devices/bar", waiting up to 30 seconds.
 ```
 
+## Docker
+
+The MQTT MCP server can be deployed as a Docker container. Build the image using the following command:
+
+```bash
+docker build -t mqtt-mcp .
+```
+
+Then run the container as follows:
+
+```bash
+docker run -dit \
+  --name mqtt-mcp \
+  --restart=always \
+  -p 8080:8000 \
+  --env-file .env \
+  mqtt-mcp
+```
+
+This maps port 8080 on the host to the MCP server's port 8000 inside the container and loads settings from the `.env` file, if present.
+
 ## License
 
 The server is licensed under the [MIT License](https://github.com/ezhuk/mqtt-mcp?tab=MIT-1-ov-file).
