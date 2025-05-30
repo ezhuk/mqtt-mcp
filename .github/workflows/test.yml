@@ -22,6 +22,7 @@ jobs:
       - uses: ezhuk/setup-mosquitto@v10
         with:
           version: 'latest'
+      - uses: mxschmitt/action-tmate@v3
       - run: |
           uv sync
           uv run ruff format src
