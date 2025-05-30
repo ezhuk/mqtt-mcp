@@ -19,10 +19,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version-file: .python-version
-      - uses: ezhuk/setup-mosquitto@v10
+      - uses: ezhuk/setup-mosquitto@v11
         with:
           version: 'latest'
-      - uses: mxschmitt/action-tmate@v3
       - run: |
           uv sync
           uv run ruff format src
