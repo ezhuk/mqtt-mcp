@@ -102,6 +102,13 @@ Publish {"foo":"bar"} to topic "devices/foo" on 127.0.0.1:1883.
 Receive a message from topic "devices/bar", waiting up to 30 seconds.
 ```
 
+## Examples
+
+The `examples` folder contains sample projects showing how to integrate with the MQTT MCP server using various client APIs to provide tools and context to LLMs.
+
+- [openai-agents](https://github.com/ezhuk/mqtt-mcp/tree/main/examples/openai-agents) - shows how to connect to the MQTT MCP server using the [OpenAI Agents SDK](https://openai.github.io/openai-agents-python/mcp/).
+- [openai](https://github.com/ezhuk/mqtt-mcp/tree/main/examples/openai) - a minimal app leveraging remote MCP server support in the [OpenAI Python library](https://platform.openai.com/docs/guides/tools-remote-mcp).
+
 ## Docker
 
 The MQTT MCP server can be deployed as a Docker container. Build the image using the `docker build` command:
