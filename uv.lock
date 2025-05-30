@@ -189,7 +189,7 @@ wheels = [
 
 [[package]]
 name = "mqtt-mcp"
-version = "0.1.8"
+version = "0.1.9"
 source = { editable = "." }
 dependencies = [
     { name = "fastmcp" },
