@@ -21,7 +21,7 @@ jobs:
           python-version-file: .python-version
       - uses: ezhuk/setup-mosquitto@v9
         with:
-          version: '2.0'
+          version: 'latest'
       - run: |
           uv sync
           uv run ruff format src
