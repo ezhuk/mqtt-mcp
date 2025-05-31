@@ -19,10 +19,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version-file: .python-version
-      - uses: ezhuk/setup-mosquitto@v17
-        with:
-          version: 'latest'
-      - uses: mxschmitt/action-tmate@v3
+      - run: |
+          cat <<EOF > mosquitto.conf
+          listener 1883
+          allow_anonymous true
+          EOF
+          docker run -d --name mosquitto -p 1883:1883 -v ${{ github.workspace }}/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro eclipse-mosquitto:2.0
       - run: |
           uv sync
           uv run ruff format src
