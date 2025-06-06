@@ -1,11 +1,17 @@
 """A lightweigth MCP server for the MQTT protocol."""
 
 from fastmcp import FastMCP
+from fastmcp.server.auth import BearerAuthProvider
 from fastmcp.prompts.prompt import Message
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from typing import Optional
 
 from mqtt_mcp.mqtt_client import AsyncMQTTClient
+
+
+class Auth(BaseModel):
+    key: Optional[str] = None
 
 
 class MQTT(BaseModel):
@@ -14,13 +20,19 @@ class MQTT(BaseModel):
 
 
 class Settings(BaseSettings):
+    auth: Auth = Auth()
     mqtt: MQTT = MQTT()
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 
 settings = Settings()
 
-mcp = FastMCP(name="MQTT MCP Server")
+mcp = FastMCP(
+    name="MQTT MCP Server",
+    auth=(
+        BearerAuthProvider(public_key=settings.auth.key) if settings.auth.key else None
+    ),
+)
 
 
 @mcp.resource("mqtt://{host}:{port}/{topic*}")
