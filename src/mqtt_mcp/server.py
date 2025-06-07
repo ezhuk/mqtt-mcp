@@ -3,6 +3,8 @@
 from fastmcp import FastMCP
 from fastmcp.server.auth import BearerAuthProvider
 from fastmcp.prompts.prompt import Message
+from fastmcp.resources import ResourceTemplate
+from fastmcp.tools import Tool
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional
@@ -35,14 +37,6 @@ mcp = FastMCP(
 )
 
 
-@mcp.resource("mqtt://{host}:{port}/{topic*}")
-@mcp.tool(
-    annotations={
-        "title": "Receive Message",
-        "readOnlyHint": True,
-        "openWorldHint": True,
-    }
-)
 async def receive_message(
     topic: str,
     host: str = settings.mqtt.host,
@@ -55,6 +49,24 @@ async def receive_message(
             return await client.receive(topic, timeout)
     except Exception as e:
         raise RuntimeError(f"{e}") from e
+
+
+mcp.add_template(
+    ResourceTemplate.from_function(
+        fn=receive_message, uri_template="mqtt://{host}:{port}/{topic*}"
+    )
+)
+
+mcp.add_tool(
+    Tool.from_function(
+        fn=receive_message,
+        annotations={
+            "title": "Receive Message",
+            "readOnlyHint": True,
+            "openWorldHint": True,
+        },
+    )
+)
 
 
 @mcp.tool(
