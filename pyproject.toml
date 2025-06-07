@@ -1,11 +1,11 @@
 [project]
 name = "mqtt-mcp"
-version = "0.1.10"
+version = "0.1.11"
 description = "A Model Context Protocol (MCP) server for MQTT"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "fastmcp>=2.6.1",
+    "fastmcp>=2.7.0",
     "paho-mqtt>=2.1.0",
     "pydantic-settings>=2.9.1",
 ]
@@ -19,7 +19,7 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
-    "pytest>=8.3.5",
+    "pytest>=8.4.0",
     "pytest-asyncio>=1.0.0",
-    "ruff>=0.11.12",
+    "ruff>=0.11.13",
 ]
