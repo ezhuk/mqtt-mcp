@@ -1,0 +1,47 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "colors": {
+    "primary": "#16A34A",
+    "light": "#07C983",
+    "dark": "#15803D"
+  },
+  "description": "",
+  "icons": {
+    "library": "lucide"
+  },
+  "name": "Docs",
+  "navigation": {
+    "dropdowns": [
+      {
+        "dropdown": "MQTT MCP Server",
+        "description": "Connect to IoT networks",
+        "icon": "network",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "mqtt-mcp/introduction",
+              "mqtt-mcp/installation"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "mqtt-mcp/messages",
+              "mqtt-mcp/prompts",
+              "mqtt-mcp/authentication"
+            ]
+          },
+          {
+            "group": "Examples",
+            "pages": [
+              "mqtt-mcp/openai",
+              "mqtt-mcp/openai-agents"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "theme": "maple"
+}

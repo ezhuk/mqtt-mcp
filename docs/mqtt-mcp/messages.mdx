@@ -1,0 +1,51 @@
+---
+title: Messages
+icon: send
+---
+
+The MQTT MCP server leverages FastMCP 2.0's core building blocks - resource templates, tools, and prompts - to streamline MQTT receive and publish operations with minimal boilerplate and a clean, Pythonic interface.
+
+### Receive Message
+
+Each topic on a device is mapped to a resource (and exposed as a tool) and [resource templates](https://gofastmcp.com/servers/resources#resource-templates) are used to specify connection details (host, port) and receive parameters (topic, timeout).
+
+```python
+@mcp.resource("mqtt://{host}:{port}/{topic*}")
+@mcp.tool(
+    annotations={
+        "title": "Receive Message",
+        "readOnlyHint": True,
+        "openWorldHint": True,
+    }
+)
+async def receive_message(
+    topic: str,
+    host: str = settings.mqtt.host,
+    port: int = settings.mqtt.port,
+    timeout: int = 60,
+) -> str:
+    """Receives a message published to the specified topic, if any."""
+    ...
+```
+
+### Publish Message
+
+Publish operations are exposed as a [tool](https://gofastmcp.com/servers/tools), accepting the same connection details (host, port) and allowing to publish a message to a specific topic in a single, atomic call.
+
+```python
+@mcp.tool(
+    annotations={
+        "title": "Publish Message",
+        "readOnlyHint": False,
+        "openWorldHint": True,
+    }
+)
+async def publish_message(
+    topic: str,
+    message: str,
+    host: str = settings.mqtt.host,
+    port: int = settings.mqtt.port,
+) -> str:
+    """Publishes a message to the specified topic."""
+    ...
+```
