@@ -1,0 +1,32 @@
+---
+title: Installation
+icon: terminal
+---
+
+The server is built with [FastMCP 2.0](https://gofastmcp.com/getting-started/welcome) and uses [uv](https://github.com/astral-sh/uv) for project and dependency management. Simply run the following command to install `uv` or check out the [installation guide](https://docs.astral.sh/uv/getting-started/installation/) for more details and alternative installation methods.
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Clone the repository, then use `uv` to install project dependencies and create a virtual environment.
+
+```bash
+git clone https://github.com/ezhuk/mqtt-mcp.git
+cd mqtt-mcp
+uv sync
+```
+
+Start the MQTT MCP server by running the following command in your terminal. It defaults to using the `Streamable HTTP` transport on port `8000`.
+
+```bash
+uv run mqtt-mcp
+```
+
+To confirm the server is up and running and explore available resources and tools, run the [MCP Inspector](https://modelcontextprotocol.io/docs/tools/inspector) and connect it to the MQTT MCP server at `http://127.0.0.1:8000/mcp/`. Make sure to set the transport to `Streamable HTTP`.
+
+```bash
+npx @modelcontextprotocol/inspector
+```
+
+![s01](https://github.com/user-attachments/assets/6ee711b2-994d-4a89-a088-13ad77b09b0e)

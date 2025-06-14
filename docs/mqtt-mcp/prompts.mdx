@@ -1,0 +1,20 @@
+---
+title: Prompts
+icon: chevron-right
+---
+
+Structured response messages are implemented using [prompts](https://gofastmcp.com/servers/prompts) that help guide the interaction, clarify missing parameters, and handle errors gracefully.
+
+```python
+@mcp.prompt(name="mqtt_help", tags={"mqtt", "help"})
+def mqtt_help() -> list[Message]:
+    """Provides examples of how to use the MQTT MCP server."""
+    ...
+```
+
+Here are some example text inputs that can be used to interact with the server.
+
+```text
+Publish {"foo":"bar"} to topic "devices/foo" on 127.0.0.1:1883.
+Receive a message from topic "devices/bar", waiting up to 30 seconds.
+```
