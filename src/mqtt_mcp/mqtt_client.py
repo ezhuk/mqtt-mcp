@@ -47,10 +47,14 @@ class AsyncioHelper:
 class AsyncMQTTClient:
     """Async MQTT client wrapper."""
 
-    def __init__(self, host: str, port: int = 1883):
+    def __init__(self, host: str, port: int = 1883, username: str = None, password: str = None):
         self.host = host
         self.port = port
+        self.username = username
+        self.password = password
         self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, clean_session=True)
+        if self.username and self.password:
+            self.client.username_pw_set(self.username, self.password)
 
     async def __aenter__(self) -> "AsyncMQTTClient":
         loop = asyncio.get_running_loop()
