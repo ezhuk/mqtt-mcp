@@ -19,6 +19,8 @@ class Auth(BaseModel):
 class MQTT(BaseModel):
     host: str = "127.0.0.1"
     port: int = 1883
+    username: Optional[str] = None
+    password: Optional[str] = None
 
 
 class Settings(BaseSettings):
@@ -41,11 +43,13 @@ async def receive_message(
     topic: str,
     host: str = settings.mqtt.host,
     port: int = settings.mqtt.port,
+    username: str | None = settings.mqtt.username,
+    password: str | None = settings.mqtt.password,
     timeout: int = 60,
 ) -> str:
     """Receives a message published to the specified topic, if any."""
     try:
-        async with AsyncMQTTClient(host, port) as client:
+        async with AsyncMQTTClient(host, port, username, password) as client:
             return await client.receive(topic, timeout)
     except Exception as e:
         raise RuntimeError(f"{e}") from e
@@ -81,10 +85,12 @@ async def publish_message(
     message: str,
     host: str = settings.mqtt.host,
     port: int = settings.mqtt.port,
+    username: str | None = settings.mqtt.username,
+    password: str | None = settings.mqtt.password,
 ) -> str:
     """Publishes a message to the specified topic."""
     try:
-        async with AsyncMQTTClient(host, port) as client:
+        async with AsyncMQTTClient(host, port, username, password) as client:
             await client.publish(topic, message)
         return f"Publish to {topic} on {host}:{port} has succedeed"
     except Exception as e:
