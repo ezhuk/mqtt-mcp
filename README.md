@@ -115,13 +115,7 @@ The `examples` folder contains sample projects showing how to integrate with the
 
 ## Docker
 
-The MQTT MCP server can be deployed as a Docker container. Build the image using the `docker build` command:
-
-```bash
-docker build -t mqtt-mcp .
-```
-
-Then run the container as follows:
+The MQTT MCP server can be deployed as a Docker container as follows:
 
 ```bash
 docker run -dit \
@@ -129,10 +123,10 @@ docker run -dit \
   --restart=always \
   -p 8080:8000 \
   --env-file .env \
-  mqtt-mcp
+  ghcr.io/ezhuk/mqtt-mcp:latest
 ```
 
-This maps port 8080 on the host to the MCP server's port 8000 inside the container and loads settings from the `.env` file, if present.
+This maps port `8080` on the host to the MCP server's port `8000` inside the container and loads settings from the `.env` file, if present.
 
 ## License
 
