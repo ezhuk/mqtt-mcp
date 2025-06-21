@@ -28,7 +28,7 @@ You should see the output similar to the following.
 
 ```text
 Running: Publish {"foo":"bar"} to topic "devices/foo" on 127.0.0.1:1883.
-Publish to "devices/foo" on 127.0.0.1:1883 has succedeed
+Publish to "devices/foo" on 127.0.0.1:1883 has succedeed.
 Running: Receive a message from topic "devices/bar", waiting up to 30 seconds.
 Received {"bar":123} published to "devices/bar".
 ```

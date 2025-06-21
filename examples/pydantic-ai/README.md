@@ -1,6 +1,6 @@
-## OpenAI Remote MCP Example
+## PydanticAI MCP Example
 
-This example demonstrates how to use the [OpenAI Python library](https://github.com/openai/openai-python) to connect to the [MQTT MCP server](https://github.com/ezhuk/mqtt-mcp) using the Streamable HTTP transport.
+This example demonstrates how to use the [PydanticAI Agent Framework](https://ai.pydantic.dev) to connect to the [MQTT MCP server](https://github.com/ezhuk/mqtt-mcp) using the `Streamable HTTP` transport.
 
 ## Getting Started
 
@@ -14,7 +14,7 @@ Clone the repository, then use `uv` to install project dependencies and create a
 
 ```bash
 git clone https://github.com/ezhuk/mqtt-mcp.git
-cd mqtt-mcp/examples/openai
+cd mqtt-mcp/examples/pydantic-ai
 uv sync
 ```
 

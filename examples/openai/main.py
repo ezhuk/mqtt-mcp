@@ -56,7 +56,7 @@ async def main():
     print(resp.output_text)
 
     resp = await create_response(
-        'Running: Receive a message from topic "devices/bar", waiting up to 30 seconds.'
+        'Receive a message from topic "devices/bar", waiting up to 30 seconds.'
     )
     print(resp.output_text)
 

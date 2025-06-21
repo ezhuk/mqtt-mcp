@@ -47,7 +47,9 @@ class AsyncioHelper:
 class AsyncMQTTClient:
     """Async MQTT client wrapper."""
 
-    def __init__(self, host: str, port: int = 1883, username: str = None, password: str = None):
+    def __init__(
+        self, host: str, port: int = 1883, username: str = None, password: str = None
+    ):
         self.host = host
         self.port = port
         self.username = username
