@@ -112,6 +112,7 @@ The `examples` folder contains sample projects showing how to integrate with the
 
 - [openai-agents](https://github.com/ezhuk/mqtt-mcp/tree/main/examples/openai-agents) - shows how to connect to the MQTT MCP server using the [OpenAI Agents SDK](https://openai.github.io/openai-agents-python/mcp/).
 - [openai](https://github.com/ezhuk/mqtt-mcp/tree/main/examples/openai) - a minimal app leveraging remote MCP server support in the [OpenAI Python library](https://platform.openai.com/docs/guides/tools-remote-mcp).
+- [pydantic-ai](https://github.com/ezhuk/mqtt-mcp/tree/main/examples/pydantic-ai) - shows how to connect to the MQTT MCP server using the [PydanticAI Agent Framework](https://ai.pydantic.dev).
 
 ## Docker
 

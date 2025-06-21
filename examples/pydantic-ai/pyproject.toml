@@ -1,0 +1,9 @@
+[project]
+name = "pydantic-mcp-example"
+version = "0.1.0"
+description = "PydanticAI MCP example"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pydantic-ai-slim[mcp,openai]>=0.3.1",
+]
