@@ -27,8 +27,7 @@ jobs:
           docker run -d --name mosquitto -p 1883:1883 -v ${{ github.workspace }}/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro eclipse-mosquitto:2.0
       - run: |
           uv sync
-          uv run ruff format src
-          uv run ruff check src
+          uv run pre-commit run --all-files
           uv run pytest
       - run: |
           docker stop mosquitto
