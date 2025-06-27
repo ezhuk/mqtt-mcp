@@ -4,6 +4,8 @@ import asyncio
 
 import paho.mqtt.client as mqtt
 
+from typing import Optional
+
 
 class AsyncioHelper:
     """Integrate paho-mqtt socket callbacks with asyncio event loop."""
@@ -48,7 +50,11 @@ class AsyncMQTTClient:
     """Async MQTT client wrapper."""
 
     def __init__(
-        self, host: str, port: int = 1883, username: str = None, password: str = None
+        self,
+        host: str,
+        port: int = 1883,
+        username: str | None = None,
+        password: str | None = None,
     ):
         self.host = host
         self.port = port
@@ -57,6 +63,7 @@ class AsyncMQTTClient:
         self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, clean_session=True)
         if self.username and self.password:
             self.client.username_pw_set(self.username, self.password)
+        self.future: Optional[asyncio.Future[str]] = None
 
     async def __aenter__(self) -> "AsyncMQTTClient":
         loop = asyncio.get_running_loop()
