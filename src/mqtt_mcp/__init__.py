@@ -1,10 +1,7 @@
-"""A lightweight MQTT MCP server."""
+from importlib.metadata import version
 
-import asyncio
-
-from .server import mcp
+from mqtt_mcp.server import MQTTMCP
 
 
-def main() -> None:
-    """Run the MCP server via streamable-http transport."""
-    asyncio.run(mcp.run_async(transport="streamable-http"))
+__version__ = version("mqtt-mcp")
+__all__ = ["MQTTMCP"]

@@ -1,44 +1,13 @@
-"""A lightweigth MCP server for the MQTT protocol."""
-
 from fastmcp import FastMCP
 from fastmcp.server.auth import BearerAuthProvider
 from fastmcp.prompts.prompt import Message
 from fastmcp.resources import ResourceTemplate
-from fastmcp.tools import Tool
-from pydantic import BaseModel
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import Optional
 
 from mqtt_mcp.mqtt_client import AsyncMQTTClient
-
-
-class Auth(BaseModel):
-    key: Optional[str] = None
-
-
-class MQTT(BaseModel):
-    host: str = "127.0.0.1"
-    port: int = 1883
-    username: Optional[str] = None
-    password: Optional[str] = None
-
-
-class Settings(BaseSettings):
-    auth: Auth = Auth()
-    mqtt: MQTT = MQTT()
-    model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", env_nested_delimiter="__"
-    )
+from mqtt_mcp.settings import Settings
 
 
 settings = Settings()
-
-mcp = FastMCP(
-    name="MQTT MCP Server",
-    auth=(
-        BearerAuthProvider(public_key=settings.auth.key) if settings.auth.key else None
-    ),
-)
 
 
 async def receive_message(
@@ -57,31 +26,6 @@ async def receive_message(
         raise RuntimeError(f"{e}") from e
 
 
-mcp.add_template(
-    ResourceTemplate.from_function(
-        fn=receive_message, uri_template="mqtt://{host}:{port}/{topic*}"
-    )
-)
-
-mcp.add_tool(
-    Tool.from_function(
-        fn=receive_message,
-        annotations={
-            "title": "Receive Message",
-            "readOnlyHint": True,
-            "openWorldHint": True,
-        },
-    )
-)
-
-
-@mcp.tool(
-    annotations={
-        "title": "Publish Message",
-        "readOnlyHint": False,
-        "openWorldHint": True,
-    }
-)
 async def publish_message(
     topic: str,
     message: str,
@@ -99,7 +43,6 @@ async def publish_message(
         raise RuntimeError(f"{e}") from e
 
 
-@mcp.prompt(name="mqtt_help", tags={"mqtt", "help"})
 def mqtt_help() -> list[Message]:
     """Provides examples of how to use the MQTT MCP server."""
     return [
@@ -111,7 +54,6 @@ def mqtt_help() -> list[Message]:
     ]
 
 
-@mcp.prompt(name="mqtt_error", tags={"mqtt", "error"})
 def mqtt_error(error: str | None = None) -> list[Message]:
     """Asks the user how to handle an error."""
     return (
@@ -122,3 +64,43 @@ def mqtt_error(error: str | None = None) -> list[Message]:
         if error
         else []
     )
+
+
+class MQTTMCP(FastMCP):
+    def __init__(self, **kwargs):
+        super().__init__(
+            name="MQTT MCP Server",
+            auth=(
+                BearerAuthProvider(public_key=settings.auth.key)
+                if settings.auth.key
+                else None
+            ),
+            **kwargs,
+        )
+
+        self.add_template(
+            ResourceTemplate.from_function(
+                fn=receive_message, uri_template="mqtt://{host}:{port}/{topic*}"
+            )
+        )
+
+        self.tool(
+            receive_message,
+            annotations={
+                "title": "Receive Message",
+                "readOnlyHint": True,
+                "openWorldHint": True,
+            },
+        )
+
+        self.tool(
+            publish_message,
+            annotations={
+                "title": "Publish Message",
+                "readOnlyHint": False,
+                "openWorldHint": True,
+            },
+        )
+
+        self.prompt(mqtt_error, name="mqtt_error", tags={"mqtt", "error"})
+        self.prompt(mqtt_help, name="mqtt_help", tags={"mqtt", "help"})
