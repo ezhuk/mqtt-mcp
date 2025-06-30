@@ -1,15 +1,11 @@
-"""Server tests."""
-
 import asyncio
 import pytest
 
 from fastmcp import Client
 
-from mqtt_mcp.server import mcp
-
 
 @pytest.mark.asyncio
-async def test_receive_message(server):
+async def test_receive_message(server, mcp):
     """Test receive_message."""
     topic = "foo"
     message = '{"bar":123}'
@@ -48,7 +44,7 @@ async def test_receive_message(server):
 
 
 @pytest.mark.asyncio
-async def test_publish_message(server):
+async def test_publish_message(server, mcp):
     """Test publish_message."""
     async with Client(mcp) as client:
         result = await client.call_tool(
@@ -65,7 +61,7 @@ async def test_publish_message(server):
 
 
 @pytest.mark.asyncio
-async def test_help_prompt():
+async def test_help_prompt(mcp):
     """Test help prompt."""
     async with Client(mcp) as client:
         result = await client.get_prompt("mqtt_help", {})
@@ -73,7 +69,7 @@ async def test_help_prompt():
 
 
 @pytest.mark.asyncio
-async def test_error_prompt():
+async def test_error_prompt(mcp):
     """Test error prompt."""
     async with Client(mcp) as client:
         result = await client.get_prompt("mqtt_error", {"error": "Could not read data"})
