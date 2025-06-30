@@ -1,10 +1,10 @@
-"""Test Fixtures."""
-
 import asyncio
 import pytest
 import threading
 
 from pydantic import BaseModel
+
+from mqtt_mcp.server import MQTTMCP
 
 
 class Config(BaseModel):
@@ -25,3 +25,8 @@ def server():
     )
     thread.start()
     yield config
+
+
+@pytest.fixture(scope="session")
+def mcp():
+    return MQTTMCP()

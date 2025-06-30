@@ -1,17 +1,18 @@
 [project]
 name = "mqtt-mcp"
-version = "0.1.17"
+version = "0.2.0"
 description = "A Model Context Protocol (MCP) server for MQTT"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "fastmcp>=2.8.0",
+    "fastmcp>=2.9.2",
     "paho-mqtt>=2.1.0",
     "pydantic-settings>=2.10.0",
+    "typer>=0.16.0",
 ]
 
 [project.scripts]
-mqtt-mcp = "mqtt_mcp:main"
+mqtt-mcp = "mqtt_mcp.cli:app"
 
 [build-system]
 requires = ["hatchling"]
