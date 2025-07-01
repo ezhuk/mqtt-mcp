@@ -3,25 +3,54 @@ title: Installation
 icon: terminal
 ---
 
-The server is built with [FastMCP 2.0](https://gofastmcp.com/getting-started/welcome) and uses [uv](https://github.com/astral-sh/uv) for project and dependency management. Simply run the following command to install `uv` or check out the [installation guide](https://docs.astral.sh/uv/getting-started/installation/) for more details and alternative installation methods.
+Use [uv](https://github.com/astral-sh/uv) to add and manage the MQTT MCP server as a dependency in your project, or install it directly via `uv pip install` or `pip install`. See the [Installation](https://github.com/ezhuk/mqtt-mcp/blob/main/docs/mqtt-mcp/installation.mdx) section of the documentation for full installation instructions and more details.
 
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
+uv add mqtt-mcp
 ```
 
-Clone the repository, then use `uv` to install project dependencies and create a virtual environment.
+The server can be embedded in and run directly from your application. By default, it exposes a `Streamable HTTP` endpoint at `http://127.0.0.1:8000/mcp/`.
+
+```python
+# app.py
+from mqtt_mcp import MQTTMCP
+
+mcp = MQTTMCP()
+
+if __name__ == "__main__":
+    mcp.run(transport="http")
+```
+
+It can also be launched from the command line using the provided `CLI` without modifying the source code.
 
 ```bash
-git clone https://github.com/ezhuk/mqtt-mcp.git
-cd mqtt-mcp
-uv sync
+mqtt-mcp
 ```
 
-Start the MQTT MCP server by running the following command in your terminal. It defaults to using the `Streamable HTTP` transport on port `8000`.
+Or in an ephemeral, isolated environment using `uvx`. Check out the [Using tools](https://docs.astral.sh/uv/guides/tools/) guide for more details.
 
 ```bash
-uv run mqtt-mcp
+uvx mqtt-mcp
 ```
+
+### Configuration
+
+For the use cases where most operations target a specific MQTT broker its connection settings (`host` and `port`) can be specified at runtime using environment variables so that all prompts that omit explicit connection parameters will be routed to this broker.
+
+```bash
+export MQTT_MCP_MQTT__HOST=10.0.0.1
+export MQTT_MCP_MQTT__PORT=1883
+```
+
+These settings can also be specified in a `.env` file in the working directory.
+
+```text
+# .env
+mqtt__host=10.0.0.1
+mqtt__port=1883
+```
+
+### MCP Inspector
 
 To confirm the server is up and running and explore available resources and tools, run the [MCP Inspector](https://modelcontextprotocol.io/docs/tools/inspector) and connect it to the MQTT MCP server at `http://127.0.0.1:8000/mcp/`. Make sure to set the transport to `Streamable HTTP`.
 
