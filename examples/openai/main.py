@@ -1,14 +1,33 @@
 import asyncio
 import os
 
+from contextlib import suppress
 from openai import AsyncOpenAI
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import Optional
+
+from mqtt_mcp import MQTTMCP
+
+
+class MQTTMCPRunner:
+    def __init__(self):
+        self._mcp = MQTTMCP()
+        self._task: asyncio.Task | None = None
+
+    async def __aenter__(self):
+        self._task = asyncio.create_task(self._mcp.run_async(transport="http"))
+        await asyncio.sleep(3.0)
+        return self._mcp
+
+    async def __aexit__(self, exc_type, exc, tb):
+        if self._task:
+            self._task.cancel()
+            with suppress(asyncio.CancelledError):
+                await self._task
 
 
 class Auth(BaseModel):
-    key: Optional[str] = None
+    key: str | None = None
 
 
 class Server(BaseModel):
@@ -19,7 +38,9 @@ class Server(BaseModel):
 class Settings(BaseSettings):
     auth: Auth = Auth()
     server: Server = Server()
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8", env_nested_delimiter="__"
+    )
 
 
 settings = Settings()
@@ -50,15 +71,13 @@ async def create_response(msg):
 
 
 async def main():
-    resp = await create_response(
-        'Publish {"foo":"bar"} to topic "devices/foo" on 127.0.0.1:1883.'
-    )
-    print(resp.output_text)
-
-    resp = await create_response(
-        'Receive a message from topic "devices/bar", waiting up to 30 seconds.'
-    )
-    print(resp.output_text)
+    async with MQTTMCPRunner():
+        for prompt in [
+            'Publish {"foo":"bar"} to topic "devices/foo" on 127.0.0.1:1883.',
+            'Receive a message from topic "devices/bar", waiting up to 30 seconds.',
+        ]:
+            resp = await create_response(prompt)
+            print(resp.output_text)
 
 
 if __name__ == "__main__":
