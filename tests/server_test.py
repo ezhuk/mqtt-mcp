@@ -39,8 +39,8 @@ async def test_receive_message(server, mcp):
             tg.create_task(pub())
 
         result = sub.result()
-        assert len(result) == 1
-        assert result[0].text == message
+        assert len(result.content) == 1
+        assert result.content[0].text == message
 
 
 @pytest.mark.asyncio
@@ -56,8 +56,8 @@ async def test_publish_message(server, mcp):
                 "port": server.port,
             },
         )
-        assert len(result) == 1
-        assert "succedeed" in result[0].text
+        assert len(result.content) == 1
+        assert "succedeed" in result.content[0].text
 
 
 @pytest.mark.asyncio

@@ -1,9 +1,16 @@
 [project]
 name = "pydantic-mcp-example"
-version = "0.1.1"
+version = "0.1.2"
 description = "PydanticAI MCP example"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "pydantic-ai-slim[mcp,openai]>=0.3.1",
+]
+
+[dependency-groups]
+dev = [
+    "mqtt-mcp>=0.2.0",
+    "pre-commit>=4.2.0",
+    "ruff>=0.12.2",
 ]

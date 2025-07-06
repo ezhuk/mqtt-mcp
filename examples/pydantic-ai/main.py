@@ -17,15 +17,12 @@ async def main():
     )
 
     async with agent.run_mcp_servers():
-        resp = await agent.run(
-            'Publish {"foo":"bar"} to topic "devices/foo" on 127.0.0.1:1883.'
-        )
-        print(resp.output)
-
-        resp = await agent.run(
-            'Receive a message from topic "devices/bar", waiting up to 30 seconds.'
-        )
-        print(resp.output)
+        for prompt in [
+            'Publish {"foo":"bar"} to topic "devices/foo" on 127.0.0.1:1883.',
+            'Receive a message from topic "devices/bar", waiting up to 30 seconds.',
+        ]:
+            resp = await agent.run(prompt)
+            print(resp.output)
 
 
 if __name__ == "__main__":

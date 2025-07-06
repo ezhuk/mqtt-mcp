@@ -18,6 +18,12 @@ cd mqtt-mcp/examples/pydantic-ai
 uv sync
 ```
 
+Start the MQTT MCP server in a separate terminal window and leave it running.
+
+```bash
+uv run mqtt-mcp
+```
+
 Make sure the `OPENAI_API_KEY` environment variable is set and run the example.
 
 ```bash

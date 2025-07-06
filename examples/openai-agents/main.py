@@ -13,15 +13,13 @@ async def run(mcp_server: MCPServer):
         model_settings=ModelSettings(tool_choice="required"),
     )
 
-    message = 'Publish {"foo":"bar"} to topic "devices/foo" on 127.0.0.1:1883.'
-    print(f"Running: {message}")
-    result = await Runner.run(starting_agent=agent, input=message)
-    print(result.final_output)
-
-    message = 'Receive a message from topic "devices/bar", waiting up to 30 seconds.'
-    print(f"Running: {message}")
-    result = await Runner.run(starting_agent=agent, input=message)
-    print(result.final_output)
+    for prompt in [
+        'Publish {"foo":"bar"} to topic "devices/foo" on 127.0.0.1:1883.',
+        'Receive a message from topic "devices/bar", waiting up to 30 seconds.',
+    ]:
+        print(f"Running: {prompt}")
+        result = await Runner.run(starting_agent=agent, input=prompt)
+        print(result.final_output)
 
 
 async def main():
