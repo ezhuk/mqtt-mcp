@@ -3,6 +3,7 @@
 A lightweight [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server that connects LLM agents to [MQTT](https://en.wikipedia.org/wiki/MQTT) devices in a secure, standardized way, enabling seamless integration of AI-driven workflows with Building Automation (BAS), Industrial Control (ICS) and Smart Home systems, allowing agents to monitor real-time sensor data, actuate devices, and orchestrate complex automation tasks.
 
 [![test](https://github.com/ezhuk/mqtt-mcp/actions/workflows/test.yml/badge.svg)](https://github.com/ezhuk/mqtt-mcp/actions/workflows/test.yml)
+[![codecov](https://codecov.io/github/ezhuk/mqtt-mcp/graph/badge.svg?token=EPF2SIV44I)](https://codecov.io/github/ezhuk/mqtt-mcp)
 [![PyPI - Version](https://img.shields.io/pypi/v/mqtt-mcp.svg)](https://pypi.org/p/mqtt-mcp)
 
 ## Getting Started
