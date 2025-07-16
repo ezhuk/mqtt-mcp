@@ -30,3 +30,14 @@ def server():
 @pytest.fixture(scope="session")
 def mcp():
     return MQTTMCP()
+
+
+@pytest.fixture()
+def cli(monkeypatch):
+    async def dummy_run_async(self, transport):
+        return
+
+    monkeypatch.setattr(
+        "mqtt_mcp.cli.MQTTMCP.run_async",
+        dummy_run_async,
+    )
