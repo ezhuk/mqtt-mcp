@@ -36,7 +36,8 @@
             "group": "Examples",
             "pages": [
               "mqtt-mcp/openai",
-              "mqtt-mcp/openai-agents"
+              "mqtt-mcp/openai-agents",
+              "mqtt-mcp/pydanticai"
             ]
           }
         ]
