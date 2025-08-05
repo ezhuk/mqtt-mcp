@@ -51,8 +51,8 @@ These settings can also be specified in a `.env` file in the working directory.
 
 ```text
 # .env
-mqtt__host=10.0.0.1
-mqtt__port=1883
+mqtt_mcp_mqtt__host=10.0.0.1
+mqtt_mcp_mqtt__port=1883
 ```
 
 ### MCP Inspector
@@ -116,7 +116,7 @@ async def publish_message(
 
 ### Authentication
 
-To enable Bearer Token authentication for the `Streamable HTTP` transport, provide the RSA public key in PEM format in the `.env` file. Check out the [Bearer Token Authentication](https://gofastmcp.com/servers/auth/bearer) section for more details.
+To enable authentication using the built-in [AuthKit](https://www.authkit.com) provider for the `Streamable HTTP` transport, provide the AuthKit domain and redirect URL in the `.env` file. Check out the [AuthKit Provider](https://gofastmcp.com/servers/auth/remote-oauth#example%3A-workos-authkit-provider) section for more details.
 
 ### Interactive Prompts
 

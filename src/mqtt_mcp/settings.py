@@ -3,7 +3,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Auth(BaseModel):
-    key: str | None = None
+    domain: str | None = None
+    url: str | None = None
 
 
 class MQTT(BaseModel):
