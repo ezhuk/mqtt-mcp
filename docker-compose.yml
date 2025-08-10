@@ -4,3 +4,8 @@ services:
     ports:
       - "8080:8000"
     restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - mqtt_mcp_mqtt__host=${mqtt_mcp_mqtt__host:-127.0.0.1}
+      - mqtt_mcp_mqtt__port=${mqtt_mcp_mqtt__port:-1883}
