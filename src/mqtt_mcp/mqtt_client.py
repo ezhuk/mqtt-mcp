@@ -99,7 +99,7 @@ class AsyncMQTTClient:
                 loop.call_soon_threadsafe(connection_future.set_result, True)
             else:
                 loop.call_soon_threadsafe(
-                    connection_future.set_exception, 
+                    connection_future.set_exception,
                     RuntimeError(f"MQTT connection failed with code {reason_code}"),
                 )
 
