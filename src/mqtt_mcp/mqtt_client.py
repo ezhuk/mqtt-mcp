@@ -15,7 +15,7 @@ class AsyncioHelper:
         self.loop = loop
         self.client = client
         self.is_windows = platform.system() == "Windows"
-        
+
         if self.is_windows:
             # On Windows, use loop_start/loop_stop instead of socket callbacks
             self.thread = None
@@ -100,7 +100,7 @@ class AsyncMQTTClient:
             else:
                 loop.call_soon_threadsafe(
                     connection_future.set_exception, 
-                    RuntimeError(f"MQTT connection failed with code {reason_code}")
+                    RuntimeError(f"MQTT connection failed with code {reason_code}"),
                 )
 
         def on_disconnect(client, userdata, reason_code, properties=None, *args):
@@ -111,7 +111,7 @@ class AsyncMQTTClient:
                 if not connection_future.done():
                     loop.call_soon_threadsafe(
                         connection_future.set_exception,
-                        RuntimeError(f"MQTT disconnected with code {reason_code}")
+                        RuntimeError(f"MQTT disconnected with code {reason_code}"),
                     )
 
         self.client.on_connect = on_connect
