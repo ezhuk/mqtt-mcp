@@ -14,7 +14,7 @@ class AsyncioHelper:
     def __init__(self, loop, client):
         self.loop = loop
         self.client = client
-        self.is_windows = platform.system() == 'Windows'
+        self.is_windows = platform.system() == "Windows"
         
         if self.is_windows:
             # On Windows, use loop_start/loop_stop instead of socket callbacks
@@ -35,7 +35,7 @@ class AsyncioHelper:
 
     def on_socket_close(self, client, userdata, sock):
         self.loop.remove_reader(sock)
-        if hasattr(self, 'misc'):
+        if hasattr(self, "misc"):
             self.misc.cancel()
 
     def on_socket_register_write(self, client, userdata, sock):
@@ -53,18 +53,18 @@ class AsyncioHelper:
                 await asyncio.sleep(1)
             except asyncio.CancelledError:
                 break
-    
+
     def start_loop(self):
         """Start the MQTT client loop (Windows-compatible)."""
         if self.is_windows:
             self.client.loop_start()
         # On Unix, the socket callbacks handle the loop
-    
+
     def stop_loop(self):
         """Stop the MQTT client loop."""
         if self.is_windows:
             self.client.loop_stop()
-        elif hasattr(self, 'misc'):
+        elif hasattr(self, "misc"):
             self.misc.cancel()
 
 
@@ -90,42 +90,48 @@ class AsyncMQTTClient:
     async def __aenter__(self) -> "AsyncMQTTClient":
         loop = asyncio.get_running_loop()
         self.helper = AsyncioHelper(loop, self.client)
-        
+
         # Set up connection callback
         connection_future = loop.create_future()
-        
+
         def on_connect(client, userdata, flags, reason_code, properties):
             if reason_code == 0:
                 loop.call_soon_threadsafe(connection_future.set_result, True)
             else:
-                loop.call_soon_threadsafe(connection_future.set_exception, 
-                                         RuntimeError(f"MQTT connection failed with code {reason_code}"))
-        
+                loop.call_soon_threadsafe(
+                    connection_future.set_exception, 
+                    RuntimeError(f"MQTT connection failed with code {reason_code}")
+                )
+
         def on_disconnect(client, userdata, reason_code, properties=None, *args):
             # Handle both v1 and v2 callback signatures (v2 passes properties as 4th arg)
             # Additional args are ignored for compatibility
             if reason_code != 0:
                 # Unexpected disconnection
                 if not connection_future.done():
-                    loop.call_soon_threadsafe(connection_future.set_exception,
-                                             RuntimeError(f"MQTT disconnected with code {reason_code}"))
-        
+                    loop.call_soon_threadsafe(
+                        connection_future.set_exception,
+                        RuntimeError(f"MQTT disconnected with code {reason_code}")
+                    )
+
         self.client.on_connect = on_connect
         self.client.on_disconnect = on_disconnect
-        
+
         # Start the client loop (Windows-compatible)
         self.helper.start_loop()
-        
+
         # Connect to the broker
         self.client.connect(self.host, self.port, keepalive=60)
-        
+
         # Wait for connection to be established (timeout after 5 seconds)
         try:
             await asyncio.wait_for(connection_future, timeout=5.0)
         except asyncio.TimeoutError:
             self.helper.stop_loop()
-            raise RuntimeError(f"Failed to connect to MQTT broker at {self.host}:{self.port} (timeout)")
-        
+            raise RuntimeError(
+                f"Failed to connect to MQTT broker at {self.host}:{self.port} (timeout)"
+            )
+
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
@@ -138,8 +144,8 @@ class AsyncMQTTClient:
         self.future = loop.create_future()
 
         # Store original message callback if it exists
-        original_on_message = getattr(self.client, 'on_message', None)
-        
+        original_on_message = getattr(self.client, "on_message", None)
+
         # Set up message callback that filters by topic
         def on_message(client, userdata, message):
             # Check if this message matches our topic
@@ -156,8 +162,8 @@ class AsyncMQTTClient:
 
         # Set up subscription callback to know when subscription is confirmed
         subscription_future = loop.create_future()
-        original_on_subscribe = getattr(self.client, 'on_subscribe', None)
-        
+        original_on_subscribe = getattr(self.client, "on_subscribe", None)
+
         def on_subscribe(client, userdata, mid, granted_qos, properties=None, *args):
             # Subscription confirmed
             if not subscription_future.done():
@@ -196,7 +202,7 @@ class AsyncMQTTClient:
             # Restore original callbacks
             if original_on_message:
                 self.client.on_message = original_on_message
-            elif hasattr(self.client, 'on_message'):
+            elif hasattr(self.client, "on_message"):
                 # If no original, just remove our callback
                 self.client.on_message = None
             if original_on_subscribe:
