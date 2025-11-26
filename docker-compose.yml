@@ -1,6 +1,10 @@
 services:
   mqtt-mcp:
-    build: .
+    build:
+      context: .
+      platforms:
+        - linux/amd64
+        - linux/arm64
     ports:
       - "8080:8000"
     restart: unless-stopped
