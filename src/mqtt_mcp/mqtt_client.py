@@ -1,7 +1,6 @@
 """Async MQTT Client."""
 
 import asyncio
-import platform
 
 import paho.mqtt.client as mqtt
 
@@ -11,7 +10,7 @@ from typing import Optional
 class AsyncioHelper:
     """Integrate paho-mqtt socket callbacks with asyncio event loop."""
 
-    def __init__(self, loop, client):
+    def __init__(self, client):
         self.client = client
 
     def start_loop(self):
