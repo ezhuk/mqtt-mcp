@@ -12,60 +12,13 @@ class AsyncioHelper:
     """Integrate paho-mqtt socket callbacks with asyncio event loop."""
 
     def __init__(self, loop, client):
-        self.loop = loop
         self.client = client
-        self.is_windows = platform.system() == "Windows"
-
-        if self.is_windows:
-            # On Windows, use loop_start/loop_stop instead of socket callbacks
-            self.thread = None
-        else:
-            # On Unix, use socket callbacks
-            self.client.on_socket_open = self.on_socket_open
-            self.client.on_socket_close = self.on_socket_close
-            self.client.on_socket_register_write = self.on_socket_register_write
-            self.client.on_socket_unregister_write = self.on_socket_unregister_write
-
-    def on_socket_open(self, client, userdata, sock):
-        def callback():
-            client.loop_read()
-
-        self.loop.add_reader(sock, callback)
-        self.misc = self.loop.create_task(self.misc_loop())
-
-    def on_socket_close(self, client, userdata, sock):
-        self.loop.remove_reader(sock)
-        if hasattr(self, "misc"):
-            self.misc.cancel()
-
-    def on_socket_register_write(self, client, userdata, sock):
-        def callback():
-            client.loop_write()
-
-        self.loop.add_writer(sock, callback)
-
-    def on_socket_unregister_write(self, client, userdata, sock):
-        self.loop.remove_writer(sock)
-
-    async def misc_loop(self):
-        while self.client.loop_misc() == mqtt.MQTT_ERR_SUCCESS:
-            try:
-                await asyncio.sleep(1)
-            except asyncio.CancelledError:
-                break
 
     def start_loop(self):
-        """Start the MQTT client loop (Windows-compatible)."""
-        if self.is_windows:
-            self.client.loop_start()
-        # On Unix, the socket callbacks handle the loop
+        self.client.loop_start()
 
     def stop_loop(self):
-        """Stop the MQTT client loop."""
-        if self.is_windows:
-            self.client.loop_stop()
-        elif hasattr(self, "misc"):
-            self.misc.cancel()
+        self.client.loop_stop()
 
 
 class AsyncMQTTClient:
@@ -89,7 +42,7 @@ class AsyncMQTTClient:
 
     async def __aenter__(self) -> "AsyncMQTTClient":
         loop = asyncio.get_running_loop()
-        self.helper = AsyncioHelper(loop, self.client)
+        self.helper = AsyncioHelper(self.client)
 
         # Set up connection callback
         connection_future = loop.create_future()
