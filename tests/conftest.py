@@ -1,7 +1,9 @@
 import asyncio
 import pytest
+import pytest_asyncio
 import threading
 
+from fastmcp import Client
 from pydantic import BaseModel
 
 from mqtt_mcp.server import MQTTMCP
@@ -30,6 +32,12 @@ def server():
 @pytest.fixture(scope="session")
 def mcp():
     return MQTTMCP()
+
+
+@pytest_asyncio.fixture
+async def client(mcp):
+    async with Client(mcp) as c:
+        yield c
 
 
 @pytest.fixture()
