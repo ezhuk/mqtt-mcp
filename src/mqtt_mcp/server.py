@@ -2,6 +2,8 @@ from fastmcp import FastMCP
 from fastmcp.server.auth.providers.workos import AuthKitProvider
 from fastmcp.prompts.prompt import Message
 from fastmcp.resources import ResourceTemplate
+from starlette.requests import Request
+from starlette.responses import JSONResponse
 
 from mqtt_mcp.mqtt_client import AsyncMQTTClient
 from mqtt_mcp.settings import Settings
@@ -106,3 +108,8 @@ class MQTTMCP(FastMCP):
 
         self.prompt(mqtt_error, name="mqtt_error", tags={"mqtt", "error"})
         self.prompt(mqtt_help, name="mqtt_help", tags={"mqtt", "help"})
+
+        self.custom_route("/health", methods=["GET"])(self.health_check)
+
+    async def health_check(self, request: Request) -> JSONResponse:
+        return JSONResponse({"status": "ok"})

@@ -1,6 +1,8 @@
 import asyncio
 import pytest
 
+from starlette.requests import Request
+
 
 @pytest.mark.asyncio
 async def test_receive_message(server, mcp, client):
@@ -68,3 +70,18 @@ async def test_error_prompt(mcp, client):
     """Test error prompt."""
     result = await client.get_prompt("mqtt_error", {"error": "Could not read data"})
     assert len(result.messages) == 2
+
+
+@pytest.mark.asyncio
+async def test_health_check(mcp):
+    response = await mcp.health_check(
+        Request(
+            {
+                "type": "http",
+                "method": "GET",
+                "path": "/health",
+                "headers": [],
+            }
+        )
+    )
+    assert response.status_code == 200
