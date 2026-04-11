@@ -2,10 +2,22 @@ version: 2
 multi-ecosystem-groups:
   all:
     schedule:
-      interval: "weekly"
+      interval: "monthly"
 updates:
   - package-ecosystem: "uv"
     directory: "/"
+    patterns: ["*"]
+    multi-ecosystem-group: "all"
+  - package-ecosystem: "uv"
+    directory: "/examples/openai"
+    patterns: ["*"]
+    multi-ecosystem-group: "all"
+  - package-ecosystem: "uv"
+    directory: "/examples/openai-agents"
+    patterns: ["*"]
+    multi-ecosystem-group: "all"
+  - package-ecosystem: "uv"
+    directory: "/examples/pydantic-ai"
     patterns: ["*"]
     multi-ecosystem-group: "all"
   - package-ecosystem: "github-actions"
