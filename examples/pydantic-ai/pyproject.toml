@@ -5,7 +5,7 @@ description = "PydanticAI MCP example"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "pydantic-ai-slim[mcp,openai]>=0.3.1",
+    "pydantic-ai-slim[mcp,openai]>=1.80.0",
 ]
 
 [dependency-groups]

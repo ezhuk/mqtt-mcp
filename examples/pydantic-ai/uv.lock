@@ -1027,7 +1027,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "pydantic-ai-slim", extras = ["mcp", "openai"], specifier = ">=0.3.1" }]
+requires-dist = [{ name = "pydantic-ai-slim", extras = ["mcp", "openai"], specifier = ">=1.80.0" }]
 
 [package.metadata.requires-dev]
 dev = [
