@@ -1,10 +1,29 @@
 """Async MQTT Client."""
 
 import asyncio
+import socket
 
 import paho.mqtt.client as mqtt
 
 from typing import Optional
+
+
+def _resolve_host(host: str) -> str:
+    """Resolve a hostname to an IP address.
+
+    Uses the synchronous system resolver (socket.getaddrinfo), which respects
+    mDNS (.local) names via the OS resolver stack (e.g. mDNSResponder on macOS).
+    Paho-mqtt's background thread does not reliably access the mDNS stack.
+    Returns the original host string if resolution fails so paho can surface
+    its own connection error.
+    """
+    try:
+        results = socket.getaddrinfo(host, None, socket.AF_UNSPEC, socket.SOCK_STREAM)
+        if results:
+            return results[0][4][0]
+    except OSError:
+        pass
+    return host
 
 
 class AsyncioHelper:
@@ -69,11 +88,19 @@ class AsyncMQTTClient:
         self.client.on_connect = on_connect
         self.client.on_disconnect = on_disconnect
 
+        # Resolve the hostname in the calling thread before connecting.
+        # Paho-mqtt's background network thread may not have access to the
+        # system mDNS resolver (e.g. .local names via mDNSResponder on macOS),
+        # but synchronous socket.getaddrinfo() in this thread does.
+        resolved_host = _resolve_host(self.host)
+
+        # Connect to the broker before starting the loop. This ensures that
+        # paho's host is set before the background thread starts and attempts
+        # reconnect(), avoiding a ValueError: Invalid host. race condition.
+        self.client.connect(resolved_host, self.port, keepalive=60)
+
         # Start the client loop (Windows-compatible)
         self.helper.start_loop()
-
-        # Connect to the broker
-        self.client.connect(self.host, self.port, keepalive=60)
 
         # Wait for connection to be established (timeout after 5 seconds)
         try:

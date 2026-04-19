@@ -3,6 +3,8 @@ import pytest
 
 from starlette.requests import Request
 
+from mqtt_mcp.mqtt_client import _resolve_host
+
 
 @pytest.mark.asyncio
 async def test_receive_message(server, mcp, client):
@@ -85,3 +87,22 @@ async def test_health_check(mcp):
         )
     )
     assert response.status_code == 200
+
+
+def test_resolve_host_localhost():
+    """_resolve_host should resolve 'localhost' to an IP address."""
+    result = _resolve_host("localhost")
+    # Should be an IP, not the original string
+    assert result in ("127.0.0.1", "::1")
+
+
+def test_resolve_host_ip_passthrough():
+    """_resolve_host should return an IP address unchanged."""
+    result = _resolve_host("127.0.0.1")
+    assert result == "127.0.0.1"
+
+
+def test_resolve_host_unresolvable():
+    """_resolve_host should return the original string when resolution fails."""
+    result = _resolve_host("this.host.does.not.exist.invalid")
+    assert result == "this.host.does.not.exist.invalid"
