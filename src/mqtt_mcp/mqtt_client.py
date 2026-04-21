@@ -20,7 +20,7 @@ def _resolve_host(host: str) -> str:
     try:
         results = socket.getaddrinfo(host, None, socket.AF_UNSPEC, socket.SOCK_STREAM)
         if results:
-            return results[0][4][0]
+            return str(results[0][4][0])
     except OSError:
         pass
     return host
