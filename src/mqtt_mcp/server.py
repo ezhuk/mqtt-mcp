@@ -1,5 +1,4 @@
 from fastmcp import FastMCP
-from fastmcp.server.auth.providers.workos import AuthKitProvider
 from fastmcp.prompts.prompt import Message
 from fastmcp.resources import ResourceTemplate
 from starlette.requests import Request
@@ -9,20 +8,22 @@ from mqtt_mcp.mqtt_client import AsyncMQTTClient
 from mqtt_mcp.settings import Settings
 
 
-settings = Settings()
-
-
 class MQTTMCP(FastMCP):
     def __init__(self, **kwargs):
+        self.settings = Settings()
+
+        auth = None
+        if self.settings.auth.domain and self.settings.auth.url:
+            from fastmcp.server.auth.providers.workos import AuthKitProvider
+
+            auth = AuthKitProvider(
+                authkit_domain=self.settings.auth.domain,
+                base_url=self.settings.auth.url,
+            )
+
         super().__init__(
             name="MQTT MCP Server",
-            auth=(
-                AuthKitProvider(
-                    authkit_domain=settings.auth.domain, base_url=settings.auth.url
-                )
-                if settings.auth.domain and settings.auth.url
-                else None
-            ),
+            auth=auth,
             **kwargs,
         )
 
@@ -58,15 +59,20 @@ class MQTTMCP(FastMCP):
     async def receive_message(
         self,
         topic: str,
-        host: str = settings.mqtt.host,
-        port: int = settings.mqtt.port,
-        username: str | None = settings.mqtt.username,
-        password: str | None = settings.mqtt.password,
+        host: str | None = None,
+        port: int | None = None,
+        username: str | None = None,
+        password: str | None = None,
         timeout: int = 60,
     ) -> str:
         """Receives a message published to the specified topic, if any."""
         try:
-            async with AsyncMQTTClient(host, port, username, password) as client:
+            async with AsyncMQTTClient(
+                host if host is not None else self.settings.mqtt.host,
+                port if port is not None else self.settings.mqtt.port,
+                username if username is not None else self.settings.mqtt.username,
+                password if password is not None else self.settings.mqtt.password,
+            ) as client:
                 return await client.receive(topic, timeout)
         except Exception as e:
             raise RuntimeError(f"{e}") from e
@@ -75,14 +81,19 @@ class MQTTMCP(FastMCP):
         self,
         topic: str,
         message: str,
-        host: str = settings.mqtt.host,
-        port: int = settings.mqtt.port,
-        username: str | None = settings.mqtt.username,
-        password: str | None = settings.mqtt.password,
+        host: str | None = None,
+        port: int | None = None,
+        username: str | None = None,
+        password: str | None = None,
     ) -> str:
         """Publishes a message to the specified topic."""
         try:
-            async with AsyncMQTTClient(host, port, username, password) as client:
+            async with AsyncMQTTClient(
+                host if host is not None else self.settings.mqtt.host,
+                port if port is not None else self.settings.mqtt.port,
+                username if username is not None else self.settings.mqtt.username,
+                password if password is not None else self.settings.mqtt.password,
+            ) as client:
                 await client.publish(topic, message)
             return f"Publish to {topic} on {host}:{port} has succedeed"
         except Exception as e:
