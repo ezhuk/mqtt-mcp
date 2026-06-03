@@ -5,13 +5,13 @@ description = "OpenAI MCP example"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "mqtt-mcp>=0.2.0",
-    "openai>=2.33.0",
+    "mqtt-mcp>=0.3.2",
+    "openai>=2.40.0",
     "pydantic-settings>=2.14.0",
 ]
 
 [dependency-groups]
 dev = [
     "pre-commit>=4.6.0",
-    "ruff>=0.15.12",
+    "ruff>=0.15.15",
 ]
