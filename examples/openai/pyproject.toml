@@ -6,12 +6,12 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "mqtt-mcp>=0.3.2",
-    "openai>=2.40.0",
-    "pydantic-settings>=2.14.0",
+    "openai>=2.44.0",
+    "pydantic-settings>=2.14.2",
 ]
 
 [dependency-groups]
 dev = [
     "pre-commit>=4.6.0",
-    "ruff>=0.15.15",
+    "ruff>=0.15.20",
 ]

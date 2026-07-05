@@ -5,12 +5,12 @@ description = "PydanticAI MCP example"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "pydantic-ai-slim[mcp,openai]>=1.105.0",
+    "pydantic-ai-slim[mcp,openai]>=2.2.0",
 ]
 
 [dependency-groups]
 dev = [
     "mqtt-mcp>=0.3.2",
     "pre-commit>=4.6.0",
-    "ruff>=0.15.15",
+    "ruff>=0.15.20",
 ]
