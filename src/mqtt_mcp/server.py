@@ -1,5 +1,5 @@
 from fastmcp import FastMCP
-from fastmcp.prompts.prompt import Message
+from fastmcp.prompts import Message
 from fastmcp.resources import ResourceTemplate
 from starlette.requests import Request
 from starlette.responses import JSONResponse
