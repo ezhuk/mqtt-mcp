@@ -1,6 +1,6 @@
 import asyncio
-import pytest
 
+import pytest
 from starlette.requests import Request
 
 from mqtt_mcp.mqtt_client import _resolve_host
