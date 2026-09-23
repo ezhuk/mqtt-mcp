@@ -1,8 +1,8 @@
 import asyncio
-import pytest
-import pytest_asyncio
 import threading
 
+import pytest
+import pytest_asyncio
 from fastmcp import Client
 from pydantic import BaseModel
 
@@ -42,7 +42,7 @@ async def client(mcp):
 
 @pytest.fixture()
 def cli(monkeypatch):
-    async def dummy_run_async(self, transport):
+    async def dummy_run_async(self, transport, host=None, port=None):
         return
 
     monkeypatch.setattr(
