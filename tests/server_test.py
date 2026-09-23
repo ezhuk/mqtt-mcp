@@ -45,6 +45,42 @@ async def test_receive_message(server, mcp, client):
 
 
 @pytest.mark.asyncio
+async def test_receive_message_wildcard(server, client):
+    subscription = "devices/+/data"
+    topic = "devices/12345/data"
+    message = '{"temperature":21.5}'
+
+    async def pub():
+        await asyncio.sleep(1.0)
+        await client.call_tool(
+            "publish_message",
+            {
+                "topic": topic,
+                "message": message,
+                "host": server.host,
+                "port": server.port,
+            },
+        )
+
+    async with asyncio.TaskGroup() as tg:
+        sub = tg.create_task(
+            client.call_tool(
+                "receive_message",
+                {
+                    "topic": subscription,
+                    "host": server.host,
+                    "port": server.port,
+                    "timeout": 3,
+                },
+            )
+        )
+        tg.create_task(pub())
+
+    result = sub.result()
+    assert result.content[0].text == message
+
+
+@pytest.mark.asyncio
 async def test_publish_message(server, mcp, client):
     """Test publish_message."""
     result = await client.call_tool(
