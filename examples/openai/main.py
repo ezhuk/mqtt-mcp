@@ -1,7 +1,7 @@
 import asyncio
 import os
-
 from contextlib import suppress
+
 from openai import AsyncOpenAI
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict

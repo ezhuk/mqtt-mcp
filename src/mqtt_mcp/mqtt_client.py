@@ -2,10 +2,9 @@
 
 import asyncio
 import socket
+from typing import Self
 
 import paho.mqtt.client as mqtt
-
-from typing import Optional
 
 
 def _resolve_host(host: str) -> str:
@@ -56,9 +55,9 @@ class AsyncMQTTClient:
         self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, clean_session=True)
         if self.username and self.password:
             self.client.username_pw_set(self.username, self.password)
-        self.future: Optional[asyncio.Future[str]] = None
+        self.future: asyncio.Future[str] | None = None
 
-    async def __aenter__(self) -> "AsyncMQTTClient":
+    async def __aenter__(self) -> Self:
         loop = asyncio.get_running_loop()
         self.helper = AsyncioHelper(self.client)
 
@@ -77,13 +76,11 @@ class AsyncMQTTClient:
         def on_disconnect(client, userdata, reason_code, properties=None, *args):
             # Handle both v1 and v2 callback signatures (v2 passes properties as 4th arg)
             # Additional args are ignored for compatibility
-            if reason_code != 0:
-                # Unexpected disconnection
-                if not connection_future.done():
-                    loop.call_soon_threadsafe(
-                        connection_future.set_exception,
-                        RuntimeError(f"MQTT disconnected with code {reason_code}"),
-                    )
+            if reason_code != 0 and not connection_future.done():
+                loop.call_soon_threadsafe(
+                    connection_future.set_exception,
+                    RuntimeError(f"MQTT disconnected with code {reason_code}"),
+                )
 
         self.client.on_connect = on_connect
         self.client.on_disconnect = on_disconnect
@@ -105,7 +102,7 @@ class AsyncMQTTClient:
         # Wait for connection to be established (timeout after 5 seconds)
         try:
             await asyncio.wait_for(connection_future, timeout=5.0)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             self.helper.stop_loop()
             raise RuntimeError(
                 f"Failed to connect to MQTT broker at {self.host}:{self.port} (timeout)"
@@ -132,7 +129,7 @@ class AsyncMQTTClient:
                 try:
                     message_str = message.payload.decode()
                     loop.call_soon_threadsafe(self.future.set_result, message_str)
-                except Exception as e:
+                except UnicodeDecodeError as e:
                     if not self.future.done():
                         loop.call_soon_threadsafe(self.future.set_exception, e)
             # Call original callback if it exists (for chaining)
@@ -156,7 +153,7 @@ class AsyncMQTTClient:
         self.client.on_message = on_message
 
         # Subscribe to the topic
-        result, mid = self.client.subscribe(topic, qos=qos)
+        result, _ = self.client.subscribe(topic, qos=qos)
         if result != mqtt.MQTT_ERR_SUCCESS:
             # Restore original callbacks on error
             if original_on_message:
@@ -168,7 +165,7 @@ class AsyncMQTTClient:
         # Wait for subscription to be acknowledged (with timeout)
         try:
             await asyncio.wait_for(subscription_future, timeout=2.0)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             # Subscription might still work even if ack is slow
             pass
 
