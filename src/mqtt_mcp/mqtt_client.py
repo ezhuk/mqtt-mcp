@@ -125,7 +125,11 @@ class AsyncMQTTClient:
         # Set up message callback that filters by topic
         def on_message(client, userdata, message):
             # Check if this message matches our topic
-            if message.topic == topic and self.future and not self.future.done():
+            if (
+                mqtt.topic_matches_sub(topic, message.topic)
+                and self.future
+                and not self.future.done()
+            ):
                 try:
                     message_str = message.payload.decode()
                     loop.call_soon_threadsafe(self.future.set_result, message_str)
