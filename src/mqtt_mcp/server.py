@@ -87,15 +87,17 @@ class MQTTMCP(FastMCP):
         password: str | None = None,
     ) -> str:
         """Publishes a message to the specified topic."""
+        host = host if host is not None else self.settings.mqtt.host
+        port = port if port is not None else self.settings.mqtt.port
         try:
             async with AsyncMQTTClient(
-                host if host is not None else self.settings.mqtt.host,
-                port if port is not None else self.settings.mqtt.port,
+                host,
+                port,
                 username if username is not None else self.settings.mqtt.username,
                 password if password is not None else self.settings.mqtt.password,
             ) as client:
                 await client.publish(topic, message)
-            return f"Publish to {topic} on {host}:{port} has succedeed"
+            return f"Publish to {topic} on {host}:{port} succeeded"
         except Exception as e:
             raise RuntimeError(f"{e}") from e
 
