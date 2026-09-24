@@ -53,7 +53,7 @@ class AsyncMQTTClient:
         self.username = username
         self.password = password
         self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, clean_session=True)
-        if self.username and self.password:
+        if self.username is not None:
             self.client.username_pw_set(self.username, self.password)
         self.future: asyncio.Future[str] | None = None
 
