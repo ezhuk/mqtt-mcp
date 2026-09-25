@@ -111,9 +111,8 @@ class AsyncMQTTClient:
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
-        self.helper.stop_loop()
         self.client.disconnect()
-        await asyncio.sleep(0.1)  # Give time for disconnect to complete
+        self.helper.stop_loop()
 
     async def receive(self, topic: str, timeout: int = 60, qos: int = 1) -> str:
         loop = asyncio.get_running_loop()
