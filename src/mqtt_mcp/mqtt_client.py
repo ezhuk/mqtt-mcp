@@ -195,6 +195,6 @@ class AsyncMQTTClient:
             raise RuntimeError(f"Publish failed with code {result.rc}")
         # Wait for the publish to complete (especially for qos > 0)
         if qos > 0:
-            result.wait_for_publish(timeout=5.0)
+            await asyncio.to_thread(result.wait_for_publish, timeout=5.0)
         # Give the event loop a chance to process the publish
         await asyncio.sleep(0.1)
