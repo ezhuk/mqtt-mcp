@@ -25,19 +25,6 @@ def _resolve_host(host: str) -> str:
     return host
 
 
-class AsyncioHelper:
-    """Integrate paho-mqtt socket callbacks with asyncio event loop."""
-
-    def __init__(self, client):
-        self.client = client
-
-    def start_loop(self):
-        self.client.loop_start()
-
-    def stop_loop(self):
-        self.client.loop_stop()
-
-
 class AsyncMQTTClient:
     """Async MQTT client wrapper."""
 
@@ -59,7 +46,6 @@ class AsyncMQTTClient:
 
     async def __aenter__(self) -> Self:
         loop = asyncio.get_running_loop()
-        self.helper = AsyncioHelper(self.client)
 
         # Set up connection callback
         connection_future = loop.create_future()
@@ -97,13 +83,13 @@ class AsyncMQTTClient:
         self.client.connect(resolved_host, self.port, keepalive=60)
 
         # Start the client loop (Windows-compatible)
-        self.helper.start_loop()
+        self.client.loop_start()
 
         # Wait for connection to be established (timeout after 5 seconds)
         try:
             await asyncio.wait_for(connection_future, timeout=5.0)
         except TimeoutError:
-            self.helper.stop_loop()
+            self.client.loop_stop()
             raise RuntimeError(
                 f"Failed to connect to MQTT broker at {self.host}:{self.port} (timeout)"
             )
@@ -112,7 +98,7 @@ class AsyncMQTTClient:
 
     async def __aexit__(self, exc_type, exc, tb):
         self.client.disconnect()
-        self.helper.stop_loop()
+        self.client.loop_stop()
 
     async def receive(self, topic: str, timeout: int = 60, qos: int = 1) -> str:
         loop = asyncio.get_running_loop()
