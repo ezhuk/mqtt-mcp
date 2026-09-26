@@ -140,10 +140,8 @@ class AsyncMQTTClient:
         result, _ = self.client.subscribe(topic, qos=qos)
         if result != mqtt.MQTT_ERR_SUCCESS:
             # Restore original callbacks on error
-            if original_on_message:
-                self.client.on_message = original_on_message
-            if original_on_subscribe:
-                self.client.on_subscribe = original_on_subscribe
+            self.client.on_message = original_on_message
+            self.client.on_subscribe = original_on_subscribe
             raise RuntimeError(f"Subscribe failed with code {result}")
 
         # Wait for subscription to be acknowledged (with timeout)
@@ -160,13 +158,8 @@ class AsyncMQTTClient:
             return await asyncio.wait_for(future, timeout)
         finally:
             # Restore original callbacks
-            if original_on_message:
-                self.client.on_message = original_on_message
-            elif hasattr(self.client, "on_message"):
-                # If no original, just remove our callback
-                self.client.on_message = None
-            if original_on_subscribe:
-                self.client.on_subscribe = original_on_subscribe
+            self.client.on_message = original_on_message
+            self.client.on_subscribe = original_on_subscribe
 
     async def publish(self, topic: str, message: str, qos: int = 1) -> None:
         result = self.client.publish(topic, message, qos=qos)
