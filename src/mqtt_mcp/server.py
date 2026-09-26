@@ -66,16 +66,13 @@ class MQTTMCP(FastMCP):
         timeout: int = 60,
     ) -> str:
         """Receives a message published to the specified topic, if any."""
-        try:
-            async with AsyncMQTTClient(
-                host if host is not None else self.settings.mqtt.host,
-                port if port is not None else self.settings.mqtt.port,
-                username if username is not None else self.settings.mqtt.username,
-                password if password is not None else self.settings.mqtt.password,
-            ) as client:
-                return await client.receive(topic, timeout)
-        except Exception as e:
-            raise RuntimeError(f"{e}") from e
+        async with AsyncMQTTClient(
+            host if host is not None else self.settings.mqtt.host,
+            port if port is not None else self.settings.mqtt.port,
+            username if username is not None else self.settings.mqtt.username,
+            password if password is not None else self.settings.mqtt.password,
+        ) as client:
+            return await client.receive(topic, timeout)
 
     async def publish_message(
         self,
@@ -89,17 +86,14 @@ class MQTTMCP(FastMCP):
         """Publishes a message to the specified topic."""
         host = host if host is not None else self.settings.mqtt.host
         port = port if port is not None else self.settings.mqtt.port
-        try:
-            async with AsyncMQTTClient(
-                host,
-                port,
-                username if username is not None else self.settings.mqtt.username,
-                password if password is not None else self.settings.mqtt.password,
-            ) as client:
-                await client.publish(topic, message)
-            return f"Publish to {topic} on {host}:{port} succeeded"
-        except Exception as e:
-            raise RuntimeError(f"{e}") from e
+        async with AsyncMQTTClient(
+            host,
+            port,
+            username if username is not None else self.settings.mqtt.username,
+            password if password is not None else self.settings.mqtt.password,
+        ) as client:
+            await client.publish(topic, message)
+        return f"Publish to {topic} on {host}:{port} succeeded"
 
     def mqtt_help(self) -> list[Message]:
         """Provides examples of how to use the MQTT MCP server."""
