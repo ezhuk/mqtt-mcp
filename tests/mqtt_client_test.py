@@ -1,4 +1,6 @@
 import asyncio
+from collections.abc import Callable
+from typing import cast
 
 import paho.mqtt.client as mqtt
 import pytest
@@ -77,23 +79,44 @@ async def test_receive_restores_callbacks(monkeypatch):
     assert client.client.on_subscribe is None
 
     def subscribe(topic, qos=1):
-        # Fire SUBACK immediately.
-        client.client.on_subscribe(None, None, 1, [qos])
+        on_subscribe = client.client.on_subscribe
+        assert on_subscribe is not None
+
+        cast(Callable[..., None], on_subscribe)(
+            client.client,
+            None,
+            1,
+            [qos],
+            None,
+        )
+
         return mqtt.MQTT_ERR_SUCCESS, 1
 
     monkeypatch.setattr(client.client, "subscribe", subscribe)
 
     async def publish_message():
         await asyncio.sleep(0)
-        message = type(
-            "Message",
-            (),
-            {
-                "topic": "foo",
-                "payload": b"bar",
-            },
-        )()
-        client.client.on_message(None, None, message)
+
+        message = cast(
+            mqtt.MQTTMessage,
+            type(
+                "Message",
+                (),
+                {
+                    "topic": "foo",
+                    "payload": b"bar",
+                },
+            )(),
+        )
+
+        on_message = client.client.on_message
+        assert on_message is not None
+
+        cast(Callable[..., None], on_message)(
+            client.client,
+            None,
+            message,
+        )
 
     task = asyncio.create_task(publish_message())
 
@@ -127,3 +150,47 @@ async def test_receive_restores_callbacks_on_subscribe_failure(monkeypatch):
 
     assert client.client.on_message is original_on_message
     assert client.client.on_subscribe is original_on_subscribe
+
+
+@pytest.mark.asyncio
+async def test_receive_invalid_utf8_raises(monkeypatch):
+    client = AsyncMQTTClient("127.0.0.1")
+
+    def subscribe(topic, qos=1):
+        return mqtt.MQTT_ERR_SUCCESS, 1
+
+    monkeypatch.setattr(client.client, "subscribe", subscribe)
+
+    async def fake_wait_for(awaitable, timeout):
+        if timeout == 2.0:
+            if not awaitable.done():
+                awaitable.set_result(True)
+            return True
+
+        message = cast(
+            mqtt.MQTTMessage,
+            type(
+                "Message",
+                (),
+                {
+                    "topic": "devices/1/data",
+                    "payload": b"\xff",
+                },
+            )(),
+        )
+
+        on_message = client.client.on_message
+        assert on_message is not None
+
+        cast(Callable[..., None], on_message)(
+            client.client,
+            None,
+            message,
+        )
+
+        return await awaitable
+
+    monkeypatch.setattr(asyncio, "wait_for", fake_wait_for)
+
+    with pytest.raises(UnicodeDecodeError):
+        await client.receive("devices/+/data")
