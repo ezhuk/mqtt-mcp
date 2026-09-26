@@ -42,7 +42,6 @@ class AsyncMQTTClient:
         self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, clean_session=True)
         if self.username is not None:
             self.client.username_pw_set(self.username, self.password)
-        self.future: asyncio.Future[str] | None = None
 
     async def __aenter__(self) -> Self:
         loop = asyncio.get_running_loop()
@@ -102,7 +101,7 @@ class AsyncMQTTClient:
 
     async def receive(self, topic: str, timeout: int = 60, qos: int = 1) -> str:
         loop = asyncio.get_running_loop()
-        self.future = loop.create_future()
+        future: asyncio.Future[str] = loop.create_future()
 
         # Store original message callback if it exists
         original_on_message = getattr(self.client, "on_message", None)
@@ -110,17 +109,13 @@ class AsyncMQTTClient:
         # Set up message callback that filters by topic
         def on_message(client, userdata, message):
             # Check if this message matches our topic
-            if (
-                mqtt.topic_matches_sub(topic, message.topic)
-                and self.future
-                and not self.future.done()
-            ):
+            if mqtt.topic_matches_sub(topic, message.topic) and not future.done():
                 try:
                     message_str = message.payload.decode()
-                    loop.call_soon_threadsafe(self.future.set_result, message_str)
+                    loop.call_soon_threadsafe(future.set_result, message_str)
                 except UnicodeDecodeError as e:
-                    if not self.future.done():
-                        loop.call_soon_threadsafe(self.future.set_exception, e)
+                    if not future.done():
+                        loop.call_soon_threadsafe(future.set_exception, e)
             # Call original callback if it exists (for chaining)
             elif original_on_message:
                 original_on_message(client, userdata, message)
@@ -162,7 +157,7 @@ class AsyncMQTTClient:
         await asyncio.sleep(0.2)
 
         try:
-            return await asyncio.wait_for(self.future, timeout)
+            return await asyncio.wait_for(future, timeout)
         finally:
             # Restore original callbacks
             if original_on_message:
@@ -172,7 +167,6 @@ class AsyncMQTTClient:
                 self.client.on_message = None
             if original_on_subscribe:
                 self.client.on_subscribe = original_on_subscribe
-            self.future = None
 
     async def publish(self, topic: str, message: str, qos: int = 1) -> None:
         result = self.client.publish(topic, message, qos=qos)
