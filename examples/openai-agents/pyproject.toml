@@ -1,16 +1,16 @@
 [project]
 name = "openai-mcp-example"
-version = "0.1.9"
+version = "0.1.10"
 description = "OpenAI Agents MCP example"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "openai-agents>=0.19.1",
+    "openai-agents>=0.24.0",
 ]
 
 [dependency-groups]
 dev = [
-    "mqtt-mcp>=0.3.3",
-    "pre-commit>=4.6.1",
-    "ruff>=0.16.0",
+    "mqtt-mcp>=0.4.0",
+    "pre-commit>=4.7.0",
+    "ruff>=0.17.0",
 ]

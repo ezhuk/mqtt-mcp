@@ -1,17 +1,17 @@
 [project]
 name = "openai-mcp-example"
-version = "0.1.10"
+version = "0.1.11"
 description = "OpenAI MCP example"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "mqtt-mcp>=0.3.3",
-    "openai>=2.50.0",
-    "pydantic-settings>=2.14.2",
+    "mqtt-mcp>=0.4.0",
+    "openai>=3.42.0",
+    "pydantic-settings>=2.16.0",
 ]
 
 [dependency-groups]
 dev = [
-    "pre-commit>=4.6.1",
-    "ruff>=0.16.0",
+    "pre-commit>=4.7.0",
+    "ruff>=0.17.0",
 ]
