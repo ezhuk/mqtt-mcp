@@ -6,9 +6,9 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "fastmcp>=4.1.0",
-    "paho-mqtt>=2.1.0",
+    "paho-mqtt>=2.2.0",
     "pydantic-settings>=2.16.0",
-    "typer>=0.27.0",
+    "typer>=0.29.0",
 ]
 
 [project.scripts]
@@ -25,7 +25,7 @@ dev = [
     "pytest-asyncio>=1.4.0",
     "pytest-cov>=7.1.0",
     "ruff>=0.17.0",
-    "ty>=0.0.95",
+    "ty>=0.0.101",
 ]
 
 [tool.ty.src]
